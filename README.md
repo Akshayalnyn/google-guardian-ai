@@ -137,7 +137,37 @@ streamlit run app.py
 You’re now ready to explore Guardian AI locally ✨
 
 ---
+## 🧭 Future Work
 
+Guardian AI is just getting started. Here's what lies ahead:
+
+- 🔮 **Ollama Multimodal Integration**  
+  As soon as `Ollama` adds multimodal support, we’ll unify *image*, *audio*, and *text* input streams directly within the same model context—removing the need for separate sensory extractors.
+
+- 🎥 **Real-time Video Intelligence**  
+  Integrate with **Google’s Video Intelligence Streaming API** for live video analysis—detecting dangerous scenarios, weapon presence, or abnormal movement patterns in real time.
+
+- 🧷 **Violence & Safety Keyword Flags**  
+  Add a semantic filter that constantly listens for high-risk phrases (e.g., *“he’s hurting me”*, *“I can’t breathe”*, *“please stop”*)—and intelligently cross-checks with tone and visual cues for context.
+
+- 📞 **Covert Emergency Signaling**  
+  Implement encoded action mechanisms. For instance:  
+  > *“I’d like to order a pepperoni pizza”*  
+  could be parsed as a silent cry for help when combined with emotional or visual distress cues.
+
+- 🕵️ **Context-aware Suppression of False Alarms**  
+  Add an internal memory buffer that can track ongoing state and reduce alert noise by validating urgency across multiple consecutive frames or utterances.
+
+- 🗣️ **Multi-Lingual Emotional Cue Recognition**  
+  Expand Gemma 3n’s capacity to understand emotions across regional Indian languages, dialects, and speech patterns—enhancing inclusivity.
+
+- 🤝 **Integration with Local Emergency Protocols**  
+  Allow community-specific configuration (e.g., dial *112* in India instead of *911*), with optional fallback to SMS/emails if calls aren’t feasible.
+
+- 🧭 **AI-Suggested Safe Zones**  
+  Use geolocation (optional, with permission) to guide the user to verified *safe zones* nearby—like police stations, women’s shelters, or hospitals.
+
+---
 ## ❤️ Final Thoughts
 
 **Guardian AI isn’t just software.**  
