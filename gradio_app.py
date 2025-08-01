@@ -142,17 +142,16 @@ def chat_with_guardian(message):
                 break
 
             elif action == "nudge":
-                st.session_state.nudge = (
-                    "💛 I noticed some signs of distress. Just checking in — are you okay? "
-                    "I’m here if you need someone to talk to."
-                )
+                st.session_state.nudge = "💛 I noticed some signs of distress. Just checking in — If you are in danger, please let me know."
                 st.session_state.awaiting_confirmation = "nudge"
                 break
 
-            elif (
-                action == "emergency contact" and st.session_state.mode == "Autonomous"
-            ):
-                confirm_emergency_action("yes")
+            elif action == "emergency contact":
+                if st.session_state.mode == "Autonomous":
+                    confirm_emergency_action("yes")
+                else:
+                    st.session_state.nudge = "🚨 GuardianAI suggests notifying emergency contacts. Do you want to proceed?"
+                    st.session_state.awaiting_confirmation = "emergency"
                 break
     except Exception as e:
         print("Emergency detection failed:", e)
@@ -274,6 +273,54 @@ def confirm_emergency_action(choice):
 # Page Config & Styling
 # -------------------------------
 st.set_page_config(page_title="Guardian AI", layout="wide")
+st.markdown(
+    """
+<style>
+/* Darker chat message background */
+div[data-testid="stChatMessage"] {
+    background-color: #e2e4ea !important;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Guardian AI Analysis Box */
+.analysis-box {
+    background-color: #f6f7f9;
+    padding: 1rem 1.2rem;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+    color: #222222;
+}
+
+/* Bold labels only */
+.analysis-box b {
+    font-weight: bold;
+}
+
+/* Emergency alert box */
+.alert-box {
+    background-color: #fa5252;
+    color: white;
+    padding: 1rem;
+    font-weight: bold;
+    border-radius: 10px;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+/* Buttons */
+div.stButton > button {
+    margin: 0.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+}
+</style>
+""",
+    unsafe_allow_html=True,
+)
+
 
 st.markdown(
     """
@@ -449,12 +496,22 @@ with col2:
                                     continue
 
                         if parsed:
-                            st.markdown("**Guardian AI Analysis**")
+                            # st.markdown("**Guardian AI Analysis**")
                             st.markdown(
-                                f"- **Risk:** `{parsed.get('Risk', 'Unknown')}`"
+                                """
+                <div style="background-color:#f9f9f9; padding: 12px; border-radius: 8px; color: #000000; font-size: 16px;">
+                    <div style="font-weight: bold; margin-bottom: 10px;">Guardian AI Analysis</div>
+                    <div><span style="font-weight: bold;">Risk:</span> {risk}</div>
+                    <div><span style="font-weight: bold;">Analysis:</span> {analysis}</div>
+                    <div><span style="font-weight: bold;">Action:</span> {action}</div>
+                </div>
+            """.format(
+                                    risk=parsed.get("Risk", "Unknown"),
+                                    analysis=parsed.get("Analysis", ""),
+                                    action=parsed.get("Action", ""),
+                                ),
+                                unsafe_allow_html=True,
                             )
-                            st.markdown(f"- **Analysis:** {parsed.get('Analysis', '')}")
-                            st.markdown(f"- **Action:** `{parsed.get('Action', '')}`")
                         else:
                             st.markdown(f"{item['content']}")
                     except Exception:
