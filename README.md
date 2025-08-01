@@ -94,16 +94,16 @@ If a critical action is recommended:
 Text, audio, and images—**all flow into one stream**
 
 🧠 **Gemma 3n as the Mind**  
-Every decision is **interpreted, evaluated, and acted on** by Gemma 3n
+Every decision is **interpreted, evaluated, and acted on** by Gemma 3n using Ollama
 
 🔐 **Resilient, Private, On-Device**  
 No internet required. No remote trust assumptions.
 
 🛑 **Empowered User Confirmations**  
-Critical alerts are **never auto-sent**—you choose.
+Critical alerts are **never auto-sent** in assistive mode—you choose between assistive and automated usage.
 
 🎨 **Stylish & Accessible UI**  
-Built with Streamlit — featuring **dark theme**, **chat bubbles**, and **alert boxes**
+Built with Streamlit — featuring **sleek theme**, **chat bubbles**, and **alert boxes**
 
 ---
 
@@ -111,6 +111,10 @@ Built with Streamlit — featuring **dark theme**, **chat bubbles**, and **alert
 
 > **Demo:**  
 > Deployed on Streamlit using Gemma 3n inference endpoint *(link coming soon)*.
+
+<img width="1724" height="720" alt="image" src="https://github.com/user-attachments/assets/e104d480-6e5d-4f2a-82ad-b9ed801a121f" />
+
+
 
 > **Run Locally in 3 Simple Steps:**
 
