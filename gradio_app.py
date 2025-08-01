@@ -71,8 +71,8 @@ if "guardian" not in st.session_state:
     st.session_state.guardian = None
 
 # Sidebar for mode selection
-st.sidebar.title("Mode Selection")
-mode = st.sidebar.radio("Choose Mode:", ["Local", "Demo"], key="model_mode")
+st.sidebar.title("Demo Mode Selection")
+mode = st.sidebar.radio("Choose Demo Mode:", ["Local", "Demo"], key="model_mode")
 
 # Initialize GuardianAI based on mode
 if st.session_state.guardian is None or st.session_state.guardian.mode != mode:
