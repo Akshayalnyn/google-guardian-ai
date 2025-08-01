@@ -112,7 +112,7 @@ Built with Streamlit — featuring **sleek theme**, **chat bubbles**, and **aler
 > **Demo:**  
 > Deployed on Streamlit using Gemma 3n inference endpoint *(link coming soon)*.
 
-<img width="1724" height="720" alt="image" src="https://github.com/user-attachments/assets/e104d480-6e5d-4f2a-82ad-b9ed801a121f" />
+<img width="1000" height="720" alt="image" src="https://github.com/user-attachments/assets/e104d480-6e5d-4f2a-82ad-b9ed801a121f" />
 
 
 
