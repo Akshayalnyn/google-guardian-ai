@@ -196,18 +196,42 @@ def render_contact_log():
 
 
 def render_log():
-    guardian = st.session_state.guardian  # Access guardian from session state
+    guardian = st.session_state.guardian
     if guardian is None:
         st.write("📝 Select a model mode to see conversation logs")
         return
     if not guardian.memory_log:
         st.write("📝 No conversation log entries yet.")
         return
-    lines = [
-        f"[{entry['timestamp'].split('T')[1][:8]}] {entry['role'].capitalize()}: {entry['content']}"
-        for entry in guardian.memory_log
-    ]
-    st.code("\n".join(lines), language="text")
+
+    formatted_lines = []
+    for entry in guardian.memory_log:
+        timestamp = entry["timestamp"].split("T")[1][:8]
+        role = entry["role"].capitalize()
+        content = entry["content"]
+
+        # Try parsing any embedded JSON
+        matches = re.findall(r"\{[\s\S]*?\}", content)
+        parsed = {}
+        for json_str in reversed(matches):
+            try:
+                parsed = json.loads(json_str)
+                if all(k in parsed for k in ["Risk", "Analysis", "Action"]):
+                    break
+            except json.JSONDecodeError:
+                continue
+
+        if parsed:
+            formatted_lines.append(
+                f"[{timestamp}] {role} (Guardian AI Analysis):\n"
+                f"  • Risk: {parsed.get('Risk')}\n"
+                f"  • Analysis: {parsed.get('Analysis')}\n"
+                f"  • Action: {parsed.get('Action')}\n"
+            )
+        else:
+            formatted_lines.append(f"[{timestamp}] {role}: {content}")
+
+    st.code("\n".join(formatted_lines), language="text")
 
 
 def confirm_emergency_action(choice):
