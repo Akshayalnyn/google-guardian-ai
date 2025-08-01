@@ -4,6 +4,7 @@ import json
 import re
 import os
 from dotenv import load_dotenv
+import streamlit as st
 
 try:
     from google import genai
@@ -86,10 +87,11 @@ class GuardianAI:
                     "❌ Google GenAI library not available for Demo mode. Install it with `pip install google-generativeai`."
                 )
 
-            api_key = os.getenv("GOOGLE_API_KEY", "").strip()
+            # Access the Google API key from Streamlit secrets
+            api_key = st.secrets["api_keys"]["GOOGLE_API_KEY"]
             if not api_key:
                 raise RuntimeError(
-                    "❌ GOOGLE_API_KEY not set in environment. Cannot initialize Demo mode."
+                    "❌ GOOGLE_API_KEY not set in Streamlit secrets. Cannot initialize Demo mode."
                 )
 
             self.genai_client = genai.Client(api_key=api_key)
