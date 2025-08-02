@@ -1,3 +1,12 @@
+---
+title: Google Guardian AI
+sdk: docker
+app_port: 8501       # streamlit default port; tailors internal HTTP listener
+emoji: 🛡️
+colorFrom: blue
+colorTo: cyan
+---
+
 # 🛡️ Guardian AI  
 ### *Your Personal Multimodal Guardian — Powered by Google Gemma 3n*
 
