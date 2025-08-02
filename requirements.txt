@@ -22,5 +22,11 @@ python-dotenv==1.0.1
 # Optional: Ollama Python client (if available via pip)
 ollama==0.1.7  # Replace with the latest pip version if needed
 
+# Git for downloading models
+GitPython==3.1.40
+
+# HTTP requests for fallback downloads
+requests==2.31.0
+
 # Miscellaneous
 numpy==1.26.4

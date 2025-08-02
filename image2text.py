@@ -4,19 +4,70 @@ import torch
 from PIL import Image
 from transformers import BlipProcessor, BlipForConditionalGeneration
 import os
+import zipfile
+import requests
+from io import BytesIO
 
 # --------------------------------------
-# Local Model Path (no internet, no Hugging Face hub)
+# Model Setup from GitHub Release
 # --------------------------------------
-MODEL_DIR = os.path.join(os.path.dirname(__file__), "models")
+MODEL_URL = "https://github.com/Akshayalnyn/google-guardian-ai/releases/download/v1.0.0/model.zip"
+MODEL_ZIP_PATH = "model.zip"
+MODEL_DIR = "downloaded_models"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
+def download_model_zip():
+    """Downloads the model zip file from GitHub Releases if not present."""
+    if os.path.exists(MODEL_ZIP_PATH):
+        print("📦 Model zip already exists.")
+        return True
+
+    print(f"⬇️ Downloading model from GitHub Releases...\n{MODEL_URL}")
+    try:
+        response = requests.get(MODEL_URL, stream=True)
+        response.raise_for_status()
+        with open(MODEL_ZIP_PATH, "wb") as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+        print("✅ Model zip downloaded successfully.")
+        return True
+    except Exception as e:
+        print(f"❌ Failed to download model: {e}")
+        return False
+
+
+def extract_model_zip():
+    """Extracts the model zip file to the target directory."""
+    if os.path.exists(MODEL_DIR) and os.path.exists(
+        os.path.join(MODEL_DIR, "config.json")
+    ):
+        print("✅ Image model already extracted.")
+        return True
+
+    if not os.path.exists(MODEL_ZIP_PATH):
+        print(f"❌ Model zip file not found at {MODEL_ZIP_PATH}")
+        return False
+
+    try:
+        print("📦 Extracting image model zip...")
+        with zipfile.ZipFile(MODEL_ZIP_PATH, "r") as zip_ref:
+            zip_ref.extractall(MODEL_DIR)
+        print("✅ Extraction successful.")
+        return True
+    except Exception as e:
+        print(f"❌ Failed to extract model zip: {e}")
+        return False
+
+
+# Download and extract model
+if not (download_model_zip() and extract_model_zip()):
+    raise RuntimeError("❌ Model setup failed.")
 
 
 def load_blip_local():
     try:
-        processor = BlipProcessor.from_pretrained(
-            MODEL_DIR, local_files_only=True, use_fast=False
-        )
+        processor = BlipProcessor.from_pretrained(MODEL_DIR, local_files_only=True)
         model = BlipForConditionalGeneration.from_pretrained(
             MODEL_DIR, local_files_only=True
         ).to(device)
@@ -29,28 +80,17 @@ def load_blip_local():
 processor, model = load_blip_local()
 
 
-# --------------------------------------
-# Describe Image (Security-Contextual Captioning)
-# --------------------------------------
 def describe_image(image_path, security_mode=True):
-    """
-    Returns a structured, context-aware caption from a local image.
-    """
+    """Generates a contextual image description."""
     if not os.path.exists(image_path):
         return "[Error] Image file not found."
 
     try:
         image = Image.open(image_path).convert("RGB")
         inputs = processor(images=image, return_tensors="pt").to(device)
-
         output = model.generate(**inputs, max_length=50)
         raw_caption = processor.decode(output[0], skip_special_tokens=True).strip()
-
-        if security_mode:
-            return f"Scene description: {raw_caption}. "
-        else:
-            return raw_caption
-
+        return f"Scene description: {raw_caption}." if security_mode else raw_caption
     except Exception as e:
         return f"[Error] Image processing failed: {e}"
 
