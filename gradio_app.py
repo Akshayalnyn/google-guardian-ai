@@ -13,6 +13,99 @@ import os
 import re
 
 # -------------------------------
+# Page Config & Styling
+# -------------------------------
+st.set_page_config(page_title="Guardian AI", layout="wide")
+st.markdown(
+    """
+<style>
+/* Darker chat message background */
+div[data-testid="stChatMessage"] {
+    background-color: #e2e4ea !important;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Guardian AI Analysis Box */
+.analysis-box {
+    background-color: #f6f7f9;
+    padding: 1rem 1.2rem;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+    color: #222222;
+}
+
+/* Bold labels only */
+.analysis-box b {
+    font-weight: bold;
+}
+
+/* Emergency alert box */
+.alert-box {
+    background-color: #fa5252;
+    color: white;
+    padding: 1rem;
+    font-weight: bold;
+    border-radius: 10px;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+/* Buttons */
+div.stButton > button {
+    margin: 0.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+}
+</style>
+""",
+    unsafe_allow_html=True,
+)
+
+
+st.markdown(
+    """
+    <style>
+    body {
+        background-color: #0e1117;
+        color: #f8f8f2;
+    }
+    .element-container:has(.stChatMessage) {
+        padding-bottom: 5px;
+    }
+    .chat-container {
+        background-color: #1e1e2f;
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 10px;
+    }
+    .nudge-alert {
+        background-color: #ff5555;
+        color: white;
+        padding: 10px;
+        border-radius: 10px;
+        font-weight: bold;
+    }
+    .google-colored {
+        font-weight: bold;
+        text-shadow: 1px 1px 2px #000;
+        font-size: 32px;
+    }
+    .google-colored span:nth-child(1) { color: #4285F4; }
+    .google-colored span:nth-child(2) { color: #DB4437; }
+    .google-colored span:nth-child(3) { color: #F4B400; }
+    .google-colored span:nth-child(4) { color: #0F9D58; }
+    .google-colored span:nth-child(5) { color: #4285F4; }
+    .google-colored span:nth-child(6) { color: #DB4437; }
+    .google-colored span:nth-child(7) { color: #F4B400; }
+    .google-colored span:nth-child(8) { color: #0F9D58; }
+    </style>
+""",
+    unsafe_allow_html=True,
+)
+# -------------------------------
 # User Profile Management
 # -------------------------------
 PROFILE_FILE = "user_profile.json"
@@ -291,101 +384,6 @@ def confirm_emergency_action(choice):
 
     st.session_state.nudge = ""
     st.session_state.awaiting_confirmation = False
-
-
-# -------------------------------
-# Page Config & Styling
-# -------------------------------
-st.set_page_config(page_title="Guardian AI", layout="wide")
-st.markdown(
-    """
-<style>
-/* Darker chat message background */
-div[data-testid="stChatMessage"] {
-    background-color: #e2e4ea !important;
-    border-radius: 10px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-}
-
-/* Guardian AI Analysis Box */
-.analysis-box {
-    background-color: #f6f7f9;
-    padding: 1rem 1.2rem;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    font-size: 15px;
-    color: #222222;
-}
-
-/* Bold labels only */
-.analysis-box b {
-    font-weight: bold;
-}
-
-/* Emergency alert box */
-.alert-box {
-    background-color: #fa5252;
-    color: white;
-    padding: 1rem;
-    font-weight: bold;
-    border-radius: 10px;
-    margin-top: 1rem;
-    text-align: center;
-}
-
-/* Buttons */
-div.stButton > button {
-    margin: 0.5rem;
-    border-radius: 8px;
-    font-weight: 600;
-}
-</style>
-""",
-    unsafe_allow_html=True,
-)
-
-
-st.markdown(
-    """
-    <style>
-    body {
-        background-color: #0e1117;
-        color: #f8f8f2;
-    }
-    .element-container:has(.stChatMessage) {
-        padding-bottom: 5px;
-    }
-    .chat-container {
-        background-color: #1e1e2f;
-        border-radius: 12px;
-        padding: 12px;
-        margin-bottom: 10px;
-    }
-    .nudge-alert {
-        background-color: #ff5555;
-        color: white;
-        padding: 10px;
-        border-radius: 10px;
-        font-weight: bold;
-    }
-    .google-colored {
-        font-weight: bold;
-        text-shadow: 1px 1px 2px #000;
-        font-size: 32px;
-    }
-    .google-colored span:nth-child(1) { color: #4285F4; }
-    .google-colored span:nth-child(2) { color: #DB4437; }
-    .google-colored span:nth-child(3) { color: #F4B400; }
-    .google-colored span:nth-child(4) { color: #0F9D58; }
-    .google-colored span:nth-child(5) { color: #4285F4; }
-    .google-colored span:nth-child(6) { color: #DB4437; }
-    .google-colored span:nth-child(7) { color: #F4B400; }
-    .google-colored span:nth-child(8) { color: #0F9D58; }
-    </style>
-""",
-    unsafe_allow_html=True,
-)
 
 
 # -------------------------------
