@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout GitHub repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Sync with Hugging Face
         uses: nateraw/huggingface-sync-action@v0.0.4
@@ -19,4 +19,5 @@ jobs:
           huggingface_repo_id: Akshayalnyn/Guardian-AI
           repo_type: space
           space_sdk: docker
-          hf_token: ${{ secrets.HF_TOKEN }}
+          private: false                     
+          hf_token: ${{ secrets.HF_TOKEN }} 
