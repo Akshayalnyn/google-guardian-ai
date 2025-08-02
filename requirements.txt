@@ -1,33 +1,25 @@
+# Core Dependencies
 streamlit==1.35.0
+torch==2.2.2
 
-# LLM & APIs
-openai==1.30.1
-transformers==4.40.2
-google-generativeai==0.8.5
-langchain==0.3.26
-langchain-community==0.3.27
-langchain-core==0.3.68
-langchain-google-genai==2.1.7
-langchain-experimental==0.3.4
-langchain-ollama==0.3.4
-crewai==0.141.0
-crewai-tools==0.0.1
-instructor==1.9.2
-litellm==1.72.6
+# Audio Processing
+librosa==0.10.1
+soundfile==0.12.1  # Required by librosa
 
-# Support packages
-aiohttp==3.9.5
-httpx==0.28.1
-requests==2.32.3
+# Image Processing
+Pillow==10.3.0
+
+# Transformers and Models
+transformers==4.41.2
+accelerate==0.30.1  # Optional but recommended for model inference
+sentencepiece==0.2.0  # Required by some transformer models
+scipy==1.11.4  # Needed for audio models in transformers
+
+# Env Handling
 python-dotenv==1.0.1
-tiktoken==0.9.0
-pydantic==2.7.1
-pydantic-settings==2.2.1
-sentence-transformers==2.7.0
-pdfplumber==0.11.7
 
-# Optional utilities
-beautifulsoup4==4.12.3
-pyyaml==6.0.1
-jinja2==3.1.4
-python-slugify==8.0.4
+# Optional: Ollama Python client (if available via pip)
+ollama==0.1.7  # Replace with the latest pip version if needed
+
+# Miscellaneous
+numpy==1.26.4
