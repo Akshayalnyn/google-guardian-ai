@@ -5,24 +5,28 @@ RUN useradd -m -u 1000 user
 
 # Set environment variables
 ENV HOME=/home/user \
-    PATH="/home/user/.local/bin:$PATH"
+    PATH="/home/user/.local/bin:$PATH" \
+    STREAMLIT_HOME=/home/user/.streamlit \
+    STREAMLIT_CONFIG_DIR=/home/user/.streamlit
 
+# Set working directory
 WORKDIR $HOME/app
-USER user
 
-# Copy your app code
+# Copy app code and change ownership
 COPY --chown=user:user . $HOME/app/
+
+# Create .streamlit directory with proper permissions
+RUN mkdir -p /home/user/.streamlit && chown -R user:user /home/user/.streamlit
+
+# Switch to non-root user
+USER user
 
 # Install dependencies
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
 
-# Explicitly set Streamlit config directory to avoid root access errors
-ENV STREAMLIT_HOME=$HOME/.streamlit
-ENV STREAMLIT_CONFIG_DIR=$STREAMLIT_HOME
-
 # Expose the default Streamlit port
 EXPOSE 8501
 
-# Run your app
-ENTRYPOINT ["streamlit", "run", "streamlit_app.py", "--server.port", "8501", "--server.headless", "true"]
+# Run the Streamlit app
+ENTRYPOINT ["streamlit", "run", "streamlit_app.py", "--server.port=8501", "--server.headless=true"]
