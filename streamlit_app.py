@@ -11,8 +11,7 @@ from PIL import Image
 import json
 import os
 import re
-import nest_asyncio
-nest_asyncio.apply()
+
 # -------------------------------
 # Page Config & Styling
 # -------------------------------
