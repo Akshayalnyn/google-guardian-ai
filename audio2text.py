@@ -2,55 +2,41 @@ import torch
 import librosa
 from transformers import WhisperProcessor, WhisperForConditionalGeneration
 import os
-import zipfile
-import requests
-from model_cache_manager import cache_manager
 
-# GitHub release URL for the Whisper model zip
-MODEL_URL = "https://github.com/Akshayalnyn/google-guardian-ai/releases/download/v1.0.0/audio_model.zip"
-MODEL_ZIP_PATH = "audio_model.zip"
-LOCAL_MODEL_DIR = cache_manager.get_model_path("audio")
+# Use Hugging Face model directly
+MODEL_NAME = (
+    "MU-NLPC/whisper-tiny-audio-captioning"  # Latest and highest quality Whisper model
+)
+CACHE_DIR = "audio_models_cache"
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-def download_and_extract_model():
-    """Download and extract Whisper model zip from GitHub Releases."""
-    # Skip if already extracted and valid
-    if cache_manager.is_cache_valid("audio", LOCAL_MODEL_DIR):
-        print("✅ Using cached audio models")
-        cache_manager.mark_accessed("audio")
-        return True
-
+def load_whisper_model():
+    """Load the Whisper model from Hugging Face cache or download if needed."""
     try:
-        print(f"⬇️ Downloading audio model from:\n{MODEL_URL}")
-        response = requests.get(MODEL_URL, stream=True)
-        response.raise_for_status()
+        print("🔄 Loading Whisper model...")
 
-        with open(MODEL_ZIP_PATH, "wb") as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                f.write(chunk)
-        print("✅ Model zip downloaded.")
+        # Create cache directory if it doesn't exist
+        os.makedirs(CACHE_DIR, exist_ok=True)
 
-        print("📦 Extracting audio model...")
-        with zipfile.ZipFile(MODEL_ZIP_PATH, "r") as zip_ref:
-            zip_ref.extractall(LOCAL_MODEL_DIR)
+        # Load from Hugging Face (will download if not cached, load from cache if available)
+        print(f"📦 Loading {MODEL_NAME}...")
+        processor = WhisperProcessor.from_pretrained(MODEL_NAME, cache_dir=CACHE_DIR)
+        model = WhisperForConditionalGeneration.from_pretrained(
+            MODEL_NAME, cache_dir=CACHE_DIR
+        ).to(device)
 
-        print("✅ Model extraction successful.")
-        cache_manager.update_cache_info("audio")
-        return True
+        print("✅ Whisper model loaded successfully!")
+        return processor, model
 
     except Exception as e:
-        print(f"❌ Failed to setup audio model: {e}")
-        return False
-
-
-# Download and extract model if needed
-if not download_and_extract_model():
-    raise RuntimeError("Audio model setup failed.")
+        print(f"❌ Failed to load Whisper model: {e}")
+        print("💡 Make sure you have internet connection for first-time download")
+        exit(1)
 
 
 # Load model and processor
-processor = WhisperProcessor.from_pretrained(LOCAL_MODEL_DIR, use_fast=False)
-model = WhisperForConditionalGeneration.from_pretrained(LOCAL_MODEL_DIR)
+processor, model = load_whisper_model()
 
 
 def process_audio_file(audio_path):
@@ -58,30 +44,75 @@ def process_audio_file(audio_path):
     if not os.path.exists(audio_path):
         return "[Error] Audio file not found."
 
-    waveform, sr = librosa.load(audio_path, sr=16000, mono=True)
-    inputs = processor(audio=waveform, sampling_rate=16000, return_tensors="pt")
-    with torch.no_grad():
-        generated_ids = model.generate(inputs["input_features"])
-        caption = processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
-    return caption
+    try:
+        # Load and preprocess audio
+        waveform, sr = librosa.load(audio_path, sr=16000, mono=True)
 
+        # Limit audio length to prevent memory issues (30 seconds max)
+        max_length = 30 * 16000  # 30 seconds at 16kHz
+        if len(waveform) > max_length:
+            waveform = waveform[:max_length]
+            print(f"⚠️ Audio truncated to 30 seconds for processing")
 
-def cleanup_session():
-    """Clean up temporary files and old cache"""
-    cache_manager.cleanup_old_cache()
-    cache_manager.cleanup_temp_directories()
-    print("🧹 Session cleanup completed")
+        # Process audio with proper parameters
+        inputs = processor(
+            audio=waveform,
+            sampling_rate=16000,
+            return_tensors="pt",
+            padding=True,
+        )
+
+        # Move inputs to device
+        input_features = inputs["input_features"].to(device)
+
+        # Generate transcription with forced decoder input ids
+        with torch.no_grad():
+            # Create proper decoder input ids for Whisper
+            forced_decoder_ids = processor.get_decoder_prompt_ids(
+                language="en", task="transcribe"
+            )
+
+            generated_ids = model.generate(
+                input_features,
+                forced_decoder_ids=forced_decoder_ids,
+                max_length=448,
+                num_beams=1,  # Use greedy decoding for tiny model
+                do_sample=False,
+                early_stopping=True,
+                suppress_tokens=[],  # Don't suppress any tokens
+            )
+
+            # Decode the transcription
+            transcription = processor.batch_decode(
+                generated_ids, skip_special_tokens=True
+            )[0]
+
+        # Clean up the transcription
+        transcription = transcription.strip()
+
+        # Check for repetitive output (like long sequences of same characters)
+        if len(transcription) > 100 and len(set(transcription.replace(" ", ""))) < 5:
+            return "[Warning] Audio may be unclear - detected repetitive transcription pattern"
+
+        return transcription if transcription else "[No speech detected]"
+
+    except Exception as e:
+        return f"[Error] Audio processing failed: {e}"
 
 
 if __name__ == "__main__":
-    try:
-        audio_path = "test_files/03-02-13-01-01-110-02-02-02-13.wav"  # Replace with your test file
-        result = process_audio_file(audio_path)
-        print("🗣️ Audio Caption:", result)
+    print("🎙️ Guardian AI — Audio-to-Text (Whisper)")
 
-        from model_cache_manager import print_cache_stats
+    # Test with the provided test file
+    test_audio_path = "test_files/03-02-13-01-01-110-02-02-02-13.wav"
 
-        print_cache_stats()
-
-    finally:
-        cleanup_session()
+    if os.path.exists(test_audio_path):
+        print(f"🔊 Processing: {test_audio_path}")
+        result = process_audio_file(test_audio_path)
+        print(f"🗣️ Transcription: {result}")
+    else:
+        print(f"⚠️ Test file not found: {test_audio_path}")
+        audio_path = input("Enter path to audio file: ").strip()
+        if audio_path:
+            result = process_audio_file(audio_path)
+            print(f"🗣️ Transcription: {result}")
