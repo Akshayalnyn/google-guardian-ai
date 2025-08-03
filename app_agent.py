@@ -7,8 +7,8 @@ from dotenv import load_dotenv
 import streamlit as st
 
 try:
-    from google import genai
-    from google.genai import types
+    import google.generativeai as genai
+    from google.generativeai import types
 
     GOOGLE_GENAI_AVAILABLE = True
 except ImportError:
