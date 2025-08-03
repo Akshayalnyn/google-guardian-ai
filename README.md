@@ -28,7 +28,8 @@ While `Whisper` and `BLIP` from Hugging Face assist with **transcription** and *
 > ➤ *Respond*  ➤ *Nudge*  ➤ *Notify Contacts*  
 
 All under one **holistic judgment framework**.
-
+---
+Try it out here!! https://guardian-ai.streamlit.app/
 ---
 
 ## 🔍 Why This Problem, Why Now
@@ -119,7 +120,7 @@ Built with Streamlit — featuring **sleek theme**, **chat bubbles**, and **aler
 ## 🚧 Setup & Quick Walkthrough
 
 > **Demo:**  
-> Deployed on Streamlit using Gemma 3n inference endpoint *(link coming soon)*.
+> Deployed on Streamlit using Gemma 3n inference endpoint *https://guardian-ai.streamlit.app/*.
 
 <img width="1000" height="720" alt="image" src="https://github.com/user-attachments/assets/e104d480-6e5d-4f2a-82ad-b9ed801a121f" />
 
