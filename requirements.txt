@@ -1,7 +1,7 @@
 # Core Dependencies
 streamlit==1.45.1
 torch==2.2.2
-google-generativeai==0.5.2
+google-genai==1.28.0
 
 # Audio Processing
 librosa==0.10.1
